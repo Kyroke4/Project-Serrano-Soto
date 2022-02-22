@@ -1,58 +1,38 @@
-Shader "Unlit/DNormal"
+Shader "ulsa/DNormalMap"
 {
     Properties
     {
-        _MainTex ("Texture", 2D) = "white" {}
+        _MainTex("Main Texture", 2D)="white"{}
+        _NormalTex("Normal Map", 2D)="bump"{}
+        _Albedo("Albedo", Color)=(1, 1, 1, 1)
+        _NormalStrength("Normal Value", Range (-4,4))=1
+
     }
+
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
-        LOD 100
+        CGPROGRAM
+        #pragma surface surf Lambert
 
-        Pass
+        fixed4 _Albedo;
+        sampler2D _MainTex;
+        sampler2D _NormalTex;
+        float _NormalStrength;
+
+        struct Input
         {
-            CGPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
-            // make fog work
-            #pragma multi_compile_fog
+            float2 uv_MainTex;
+            float4 color: COLOR;
+        }; //; XD
 
-            #include "UnityCG.cginc"
-
-            struct appdata
-            {
-                float4 vertex : POSITION;
-                float2 uv : TEXCOORD0;
-            };
-
-            struct v2f
-            {
-                float2 uv : TEXCOORD0;
-                UNITY_FOG_COORDS(1)
-                float4 vertex : SV_POSITION;
-            };
-
-            sampler2D _MainTex;
-            float4 _MainTex_ST;
-
-            v2f vert (appdata v)
-            {
-                v2f o;
-                o.vertex = UnityObjectToClipPos(v.vertex);
-                o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-                UNITY_TRANSFER_FOG(o,o.vertex);
-                return o;
-            }
-
-            fixed4 frag (v2f i) : SV_Target
-            {
-                // sample the texture
-                fixed4 col = tex2D(_MainTex, i.uv);
-                // apply fog
-                UNITY_APPLY_FOG(i.fogCoord, col);
-                return col;
-            }
-            ENDCG
+        void surf (Input IN, inout SurfaceOutput o)
+        {
+            o.Albedo=_Albedo.rbg;
+            o.Normal=UnpackNormal(tex2D(_NormalTex, IN.uv_MainTex));
+            o.Normal.z/=_NormalStrength;
         }
+
+        ENDCG
     }
+
 }

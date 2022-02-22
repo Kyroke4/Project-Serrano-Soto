@@ -3,8 +3,8 @@ Shader "ulsa/CRimLight"
     Properties
     {
         _Albedo("Albedo", Color)= (1, 1, 1, 1)
-        [HDR] _RimColor("RimColor", Color)= (0.0, 0.0, 0.0, 0.0)
-        _RimPower ("RimPower", Range(0.1,8.0)) = 1
+        [HDR] _RimColor("Rim Color", Color)= (0.0, 0.0, 0.0, 0.0)
+        _RimPower ("Rim Power", Range(0.1,8.0)) = 1
 
     }
 
